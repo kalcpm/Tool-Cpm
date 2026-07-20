@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPM Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: #1a1a2e;
+            padding: 30px;
+            border-radius: 15px;
+            width: 420px;
+            max-width: 95%;
+            box-shadow: 0 0 40px rgba(100, 0, 255, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #a200ff;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 20px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            background: #2a2a4a;
+            color: #888;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .tab-btn.active {
+            background: #a200ff;
+            color: #fff;
+        }
+
+        .tab-btn:hover {
+            background: #6a00aa;
+            color: #fff;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            color: #aaa;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #333;
+            border-radius: 8px;
+            background: #0a0a1a;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: #a200ff;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-primary {
+            background: #a200ff;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #7a00cc;
+            transform: scale(1.02);
+        }
+
+        .btn-danger {
+            background: #ff0044;
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            background: #cc0033;
+            transform: scale(1.02);
+        }
+
+        .btn-success {
+            background: #00cc66;
+            color: #fff;
+        }
+
+        .btn-success:hover {
+            background: #00994d;
+            transform: scale(1.02);
+        }
+
+        .btn-warning {
+            background: #ffaa00;
+            color: #000;
+        }
+
+        .btn-warning:hover {
+            background: #cc8800;
+            transform: scale(1.02);
+        }
+
+        .btn-secondary {
+            background: #2a2a4a;
+            color: #fff;
+        }
+
+        .btn-secondary:hover {
+            background: #3a3a5a;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+        }
+
+        .status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 13px;
+            display: none;
+        }
+
+        .status.success {
+            display: block;
+            background: rgba(0, 204, 102, 0.2);
+            border: 1px solid #00cc66;
+            color: #00cc66;
+        }
+
+        .status.error {
+            display: block;
+            background: rgba(255, 0, 68, 0.2);
+            border: 1px solid #ff0044;
+            color: #ff0044;
+        }
+
+        .status.info {
+            display: block;
+            background: rgba(162, 0, 255, 0.2);
+            border: 1px solid #a200ff;
+            color: #a200ff;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid #2a2a4a;
+            margin: 20px 0;
+        }
+
+        .service-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .service-grid .btn {
+            padding: 10px;
+            font-size: 13px;
+        }
+
+        .footer {
+            text-align: center;
+            color: #444;
+            font-size: 11px;
+            margin-top: 20px;
+        }
+
+        .footer a {
+            color: #a200ff;
+            text-decoration: none;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .account-info {
+            background: #0a0a1a;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 13px;
+        }
+
+        .account-info p {
+            margin: 3px 0;
+            color: #aaa;
+        }
+
+        .account-info span {
+            color: #00cc66;
+        }
+
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid #a200ff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px 15px;
+            }
+            .service-grid {
+                grid-template-columns: 1fr;
+            }
+            .tab-btn {
+                font-size: 13px;
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🚗 CPM MANAGER</h1>
+    <p class="subtitle">by @abdulazizruziboev</p>
+
+    <!-- Tabs -->
+    <div class="tab-buttons">
+        <button class="tab-btn active" onclick="switchTab('cpm1')">CPM 1</button>
+        <button class="tab-btn" onclick="switchTab('cpm2')">CPM 2</button>
+    </div>
+
+    <!-- ============= CPM 1 ============= -->
+    <div id="tab-cpm1" class="tab-content active">
+        <div id="cpm1-login-form">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="cpm1-email" placeholder="seu@email.com">
+            </div>
+            <div class="form-group">
+                <label>Senha</label>
+                <input type="password" id="cpm1-pass" placeholder="********">
+            </div>
+            <button class="btn btn-primary" onclick="cpm1Login()">🔑 Login</button>
+            <div style="margin-top:10px; text-align:center;">
+                <small style="color:#666;">Não tem conta? <a href="#" style="color:#a200ff;" onclick="cpm1Register()">Registrar</a></small>
+            </div>
+        </div>
+
+        <div id="cpm1-dashboard" class="hidden">
+            <div class="account-info" id="cpm1-info">
+                <p>📧 Email: <span id="cpm1-display-email">-</span></p>
+                <p>🔑 Token: <span id="cpm1-display-token" style="font-size:10px; word-break:break-all;">-</span></p>
+            </div>
+
+            <div class="service-grid">
+                <button class="btn btn-success" onclick="cpm1KingRank()">👑 King Rank</button>
+                <button class="btn btn-warning" onclick="cpm1ChangeEmail()">✉️ Alterar Email</button>
+                <button class="btn btn-warning" onclick="cpm1ChangePassword()">🔒 Alterar Senha</button>
+                <button class="btn btn-danger" onclick="cpm1DeleteAccount()">🗑️ Excluir Conta</button>
+            </div>
+
+            <hr class="divider">
+            <button class="btn btn-secondary" onclick="cpm1Logout()">🚪 Sair</button>
+        </div>
+
+        <div id="cpm1-status" class="status"></div>
+    </div>
+
+    <!-- ============= CPM 2 ============= -->
+    <div id="tab-cpm2" class="tab-content">
+        <div id="cpm2-login-form">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="cpm2-email" placeholder="seu@email.com">
+            </div>
+            <div class="form-group">
+                <label>Senha</label>
+                <input type="password" id="cpm2-pass" placeholder="********">
+            </div>
+            <button class="btn btn-primary" onclick="cpm2Login()">🔑 Login</button>
+            <div style="margin-top:10px; text-align:center;">
+                <small style="color:#666;">Não tem conta? <a href="#" style="color:#a200ff;" onclick="cpm2Register()">Registrar</a></small>
+            </div>
+        </div>
+
+        <div id="cpm2-dashboard" class="hidden">
+            <div class="account-info" id="cpm2-info">
+                <p>📧 Email: <span id="cpm2-display-email">-</span></p>
+                <p>🔑 Token: <span id="cpm2-display-token" style="font-size:10px; word-break:break-all;">-</span></p>
+            </div>
+
+            <div class="service-grid">
+                <button class="btn btn-success" onclick="cpm2KingRank()">👑 King Rank</button>
+                <button class="btn btn-warning" onclick="cpm2ChangeEmail()">✉️ Alterar Email</button>
+                <button class="btn btn-warning" onclick="cpm2ChangePassword()">🔒 Alterar Senha</button>
+                <button class="btn btn-danger" onclick="cpm2DeleteAccount()">🗑️ Excluir Conta</button>
+            </div>
+
+            <hr class="divider">
+            <button class="btn btn-secondary" onclick="cpm2Logout()">🚪 Sair</button>
+        </div>
+
+        <div id="cpm2-status" class="status"></div>
+    </div>
+
+    <div class="footer">
+        Telegram: <a href="https://t.me/abdulazizruziboev" target="_blank">@abdulazizruziboev</a>
+    </div>
+</div>
+
+<script>
+// ============================================================
+// CONFIGURAÇÕES
+// ============================================================
+const CPM1_FB_KEY = "AIzaSyBW1ZbMiUeDZHYUO2bY8Bfnf5rRgrQGPTM";
+const CPM1_RANK_API = "https://us-central1-cp-multiplayer.cloudfunctions.net/SetUserRating4";
+
+const CPM2_FB_KEY = "AIzaSyCQDz9rgjgmvmFkvVfmvr2-7fT4tfrzRRQ";
+const CPM2_RANK_API = "https://us-central1-cpm-2-7cea1.cloudfunctions.net/SetUserRating17";
+
+// ============================================================
+// VARIÁVEIS GLOBAIS
+// ============================================================
+let cpm1Token = null;
+let cpm1Email = null;
+let cpm1Pass = null;
+
+let cpm2Token = null;
+let cpm2Email = null;
+let cpm2Pass = null;
+
+// ============================================================
+// FUNÇÕES AUXILIARES
+// ============================================================
+function switchTab(tab) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    const btns = document.querySelectorAll('.tab-btn');
+    btns.forEach((btn, index) => {
+        if ((tab === 'cpm1' && index === 0) || (tab === 'cpm2' && index === 1)) {
+            btn.classList.add('active');
+        }
+    });
+}
+
+function showStatus(id, type, msg) {
+    const el = document.getElementById(id);
+    el.className = 'status ' + type;
+    el.innerHTML = msg;
+    el.style.display = 'block';
+}
+
+function hideStatus(id) {
+    document.getElementById(id).style.display = 'none';
+}
+
+function showCpm1Dashboard() {
+    document.getElementById('cpm1-login-form').classList.add('hidden');
+    document.getElementById('cpm1-dashboard').classList.remove('hidden');
+    document.getElementById('cpm1-display-email').textContent = cpm1Email;
+    document.getElementById('cpm1-display-token').textContent = cpm1Token.substring(0, 30) + '...';
+}
+
+function showCpm1Login() {
+    document.getElementById('cpm1-login-form').classList.remove('hidden');
+    document.getElementById('cpm1-dashboard').classList.add('hidden');
+}
+
+function showCpm2Dashboard() {
+    document.getElementById('cpm2-login-form').classList.add('hidden');
+    document.getElementById('cpm2-dashboard').classList.remove('hidden');
+    document.getElementById('cpm2-display-email').textContent = cpm2Email;
+    document.getElementById('cpm2-display-token').textContent = cpm2Token.substring(0, 30) + '...';
+}
+
+function showCpm2Login() {
+    document.getElementById('cpm2-login-form').classList.remove('hidden');
+    document.getElementById('cpm2-dashboard').classList.add('hidden');
+}
+
+// ============================================================
+// CPM 1 - FUNÇÕES
+// ============================================================
+async function cpm1Login() {
+    const email = document.getElementById('cpm1-email').value.trim();
+    const pass = document.getElementById('cpm1-pass').value.trim();
+
+    if (!email || !pass) {
+        showStatus('cpm1-status', 'error', '❌ Preencha todos os campos!');
+        return;
+    }
+
+    hideStatus('cpm1-status');
+    showStatus('cpm1-status', 'info', '⏳ <span class="loading"></span> Autenticando...');
+
+    try {
+        const url = `https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=${CPM1_FB_KEY}`;
+        const resp = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password: pass, returnSecureToken: true })
+        });
+        const data = await resp.json();
+
+        if (data.idToken) {
+            cpm1Token = data.idToken;
+            cpm1Email = email;
+            cpm1Pass = pass;
+            showStatus('cpm1-status', 'success', '✅ Login realizado com sucesso!');
+            setTimeout(() => { hideStatus('cpm1-status'); showCpm1Dashboard(); }, 500);
+        } else {
+            showStatus('cpm1-status', 'error', '❌ Erro: ' + (data.error?.message || 'Credenciais inválidas'));
+        }
+    } catch (e) {
+        showStatus('cpm1-status', 'error', '❌ Erro de conexão: ' + e.message);
+    }
+}
+
+async function cpm1Register() {
+    const email = prompt('Digite o email para registrar:');
+    if (!email) return;
+    const pass = prompt('Digite a senha:');
+    if (!pass) return;
+
+    hideStatus('cpm1-status');
+    showStatus('cpm1-status', 'info', '⏳ <span class="loading"></span> Criando conta...');
+
+    try {
+        const url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${CPM1_FB_KEY}`;
+        const resp = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password: pass, returnSecureToken: true })
+        });
+        const data = await resp.json();
+
+        if (data.idToken) {
+            showStatus('cpm1-status', 'success', '✅ Conta CPM1 criada com sucesso!');
+            document.getElementById('cpm1-email').value = email;
+            document.getElementById('cpm1-pass').value = pass;
+        } else {
+            showStatus('cpm1-status', 'error', '❌ Erro: ' + (data.error?.message || 'Falha ao criar'));
+        }
+    } catch (e) {
+        showStatus('cpm1-status', 'error', '❌ Erro: ' + e.message);
+    }
+}
+
+function cpm1Logout() {
+    cpm1Token = null;
+    cpm1Email = null;
+    cpm1Pass = null;
+    showCpm1Login();
+    document.getElementById('cpm1-email').value = '';
+    document.getElementById('cpm1-pass').value = '';
+    hideStatus('cpm1-status');
+}
+
+async function cpm1KingRank() {
+    if (!cpm1Token) { showStatus('cpm1-status', 'error', '⚠️ Faça login primeiro!'); return; }
+
+    hideStatus('cpm1-status');
+    showStatus('cpm1-status', 'info', '⏳ <span class="loading"></span> Aplicando King Rank...');
+
+    try {
+        const ratingData = {
+            data: JSON.stringify({
+                RatingData: {
+                    t_distance: 2000000000,
+                    time: 2000000000,
+                    speed_banner: 2000000000,
+                    gifts: 2000000000,
+                    treasure: 2000000000,
+                    cars: 2000000000,
+                    race_win: 2000000000,
+                    levels: 2000000000,
+                    drift: 2000000000,
+                    run: 2000000000,
+                    police: 2000000000,
+                    block_post: 2000000000,
+                    real_estate: 2000000000,
+                    fuel: 2000000000,
+                    car_trade: 2000000000,
+                    car_exchange: 2000000000,
+                    burnt_tire: 2000000000,
+                    car_fix: 2000000000,
+                    car_wash: 2000000000,
+                    offroad: 2000000000,
+                    passanger_distance: 2000000000,
+                    reactions: 2000000000,
+                    drift_max: 2000000000,
+                    taxi: 2000000000,
+                    delivery: 2000000000,
+                    cargo: 2000000000,
+                    push_ups: 2000000000,
+                    slicer_cut: 2000000000,
+                    car_collided: 2000000000,
+                    new_type: 2000000000
+                }
+            })
+        };
+
+        const resp = await fetch(CPM1_RANK_API, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${cpm1Token}`
+            },
+            body: JSON.stringify(ratingData)
+        });
+
+        if (resp.status === 200) {
+            showStatus('cpm1-status', 'success', '👑 King Rank aplicado com sucesso!');
+        } else {
+            const text = await resp.text();
+            showStatus('cpm1-status', 'error', '❌ Erro: ' + text);
+        }
+    } catch (e) {
+        showStatus('cpm1-status', 'error', '❌ Erro: ' + e.message);
+    }
+}
+
+async function cpm1ChangeEmail() {
+    if (!cpm1Token) { showStatus('cpm1-status', 'error', '⚠️ Faça login primeiro!'); return; }
+
+    const newEmail = prompt('Digite o novo email:');
+    if (!newEmail) return;
+
+    hideStatus('cpm1-status');
+    showStatus('cpm1-status', 'info', '⏳ <span class="loading"></span> Alterando email...');
+
+    try {
+        const url = `https://identitytoolkit.googleapis.com/v1/accounts:update?key=${CPM1_FB_KEY}`;
+        const resp = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idToken: cpm1Token, email: newEmail, returnSecureToken: true })
+        });
+        const data = await resp.json();
+
+        if (data.email) {
+            cpm1Email = newEmail;
+            document.getElementById('cpm1-display-email').textContent = newEmail;
+            showStatus('cpm1-status', 'success', '✅ Email alterado para: ' + newEmail);
+        } else {
+            showStatus('cpm1-status', 'error', '❌ Erro: ' + (data.error?.message || 'Falha ao alterar'));
+        }
+    } catch (e) {
+        showStatus('cpm1-status', 'error', '❌ Erro: ' + e.message);
+    }
+}
+
+async function cpm1ChangePassword() {
+    if (!cpm1Token) { showStatus('cpm1-status', 'error', '⚠️ Faça login primeiro!'); return; }
+
+    const newPass = prompt('Digite a nova senha:');
+    if (!newPass) return;
+
+    hideStatus('cpm1-status');
+    showStatus('cpm1-status', 'info', '⏳ <span class="loading"></span> Alterando senha...');
+
+    try {
+        const url = `https://identitytoolkit.googleapis.com/v1/accounts:update?key=${CPM1_FB_KEY}`;
+        const resp = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idToken: cpm1Token, password: newPass, returnSecureToken: true })
+        });
+        const data = await resp.json();
+
+        if (data.passwordHash) {
+            cpm1Pass = newPass;
+            showStatus('cpm1-status', 'success', '✅ Senha alterada com sucesso!');
+        } else {
+            showStatus('cpm1-status', 'error', '❌ Erro: ' + (data.error?.message || 'Falha ao alterar'));
+        }
+    } catch (e) {
+        showStatus('cpm1-status', 'error', '❌ Erro: ' + e.message);
+    }
+}
+
+async function cpm1DeleteAccount() {
+    if (!cpm1Token) { showStatus('cpm1-status', 'error', '⚠️ Faça login primeiro!'); return; }
+
+    if (!confirm('⚠️ Tem certeza que deseja EXCLUIR esta conta CPM1?\nEsta ação é irreversível!')) return;
+
+    hideStatus('cpm1-status');
+    showStatus('cpm1-status', 'info', '⏳ <span class="loading"></span> Excluindo conta...');
+
+    try {
+        const url = `https://identitytoolkit.googleapis.com/v1/accounts:delete?key=${CPM1_FB_KEY}`;
+        const resp = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idToken: cpm1Token })
+        });
+
+        if (resp.status === 200) {
+            showStatus('cpm1-status', 'success', '✅ Conta excluída com sucesso!');
+            setTimeout(() => cpm1Logout(), 1500);
+        } else {
+            const data = await resp.json();
+            showStatus('cpm1-status', 'error', '❌ Erro: ' + (data.error?.message || 'Falha ao excluir'));
+        }
+    } catch (e) {
+        showStatus('cpm1-status', 'error', '❌ Erro: ' + e.message);
+    }
+}
+
+// ============================================================
+// CPM 2 - FUNÇÕES
+// ============================================================
+async function cpm2Login() {
+    const email = document.getElementById('cpm2-email').value.trim();
+    const pass = document.getElementById('cpm2-pass').value.trim();
+
+    if (!email || !pass) {
+        showStatus('cpm2-status', 'error', '❌ Preencha todos os campos!');
+        return;
+    }
+
+    hideStatus('cpm2-status');
+    showStatus('cpm2-status', 'info', '⏳ <span class="loading"></span> Autenticando...');
+
+    try {
+        const url = `https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=${CPM2_FB_KEY}`;
+        const resp = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password: pass, returnSecureToken: true })
+        });
+        const data = await resp.json();
+
+        if (data.idToken) {
+            cpm2Token = data.idToken;
+            cpm2Email = email;
+            cpm2Pass = pass;
+            showStatus('cpm2-status', 'success', '✅ Login realizado com sucesso!');
+            setTimeout(() => { hideStatus('cpm2-status'); showCpm2Dashboard(); }, 500);
+        } else {
+            showStatus('cpm2-status', 'error', '❌ Erro: ' + (data.error?.message || 'Credenciais inválidas'));
+        }
+    } catch (e) {
+        showStatus('cpm2-status', 'error', '❌ Erro de conexão: ' + e.message);
+    }
+}
+
+async function cpm2Register() {
+    const email = prompt('Digite o email para registrar:');
+    if (!email) return;
+    const pass = prompt('Digite a senha:');
+    if (!pass) return;
+
+    hideStatus('cpm2-status');
+    showStatus('cpm2-status', 'info', '⏳ <span class="loading"></span> Criando conta...');
+
+    try {
+        const url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${CPM2_FB_KEY}`;
+        const resp = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password: pass, returnSecureToken: true })
+        });
+        const data = await resp.json();
+
+        if (data.idToken) {
+            showStatus('cpm2-status', 'success', '✅ Conta CPM2 criada com sucesso!');
+            document.getElementById('cpm2-email').value = email;
+            document.getElementById('cpm2-pass').value = pass;
+        } else {
+            showStatus('cpm2-status', 'error', '❌ Erro: ' + (data.error?.message || 'Falha ao criar'));
+        }
+    } catch (e) {
+        showStatus('cpm2-status', 'error', '❌ Erro: ' + e.message);
+    }
+}
+
+function cpm2Logout() {
+    cpm2Token = null;
+    cpm2Email = null;
+    cpm2Pass = null;
+    showCpm2Login();
+    document.getElementById('cpm2-email').value = '';
+    document.getElementById('cpm2-pass').value = '';
+    hideStatus('cpm2-status');
+}
+
+async function cpm2KingRank() {
+    if (!cpm2Token) { showStatus('cpm2-status', 'error', '⚠️ Faça login primeiro!'); return; }
+
+    hideStatus('cpm2-status');
+    showStatus('cpm2-status', 'info', '⏳ <span class="loading"></span> Aplicando King Rank CPM2...');
+
+    try {
+        const ratingData = {
+            data: JSON.stringify({
+                RatingData: {
+                    t_distance: 2000000000,
+                    time: 2000000000,
+                    speed_banner: 2000000000,
+                    gifts: 2000000000,
+                    treasure: 2000000000,
+                    cars: 2000000000,
+                    race_win: 2000000000,
+                    levels: 2000000000,
+                    drift: 2000000000,
+                    run: 2000000000,
+                    police: 2000000000,
+                    block_post: 2000000000,
+                    real_estate: 2000000000,
+                    fuel: 2000000000,
+                    car_trade: 2000000000,
+                    car_exchange: 2000000000,
+                    burnt_tire: 2000000000,
+                    car_fix: 2000000000,
+                    car_wash: 2000000000,
+                    offroad: 2000000000,
+                    passanger_distance: 2000000000,
+                    reactions: 2000000000,
+                    drift_max: 2000000000,
+                    taxi: 2000000000,
+                    delivery: 2000000000,
+                    cargo: 2000000000,
+                    push_ups: 2000000000,
+                    slicer_cut: 2000000000,
+                    car_collided: 2000000000,
+                    new_type: 2000000000
+                }
+            })
+        };
+
+        const resp = await fetch(CPM2_RANK_API, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${cpm2Token}`
+            },
+            body: JSON.stringify(ratingData)
+        });
+
+        if (resp.status === 200) {
+            showStatus('cpm2-status', 'success', '👑 King Rank CPM2 aplicado com sucesso!');
+        } else {
+            const text = await resp.text();
+            showStatus('cpm2-status', 'error', '❌ Erro: ' + text);
+        }
+    } catch (e) {
+        showStatus('cpm2-status', 'error', '❌ Erro: ' + e.message);
+    }
+}
+
+async function cpm2ChangeEmail() {
+    if (!cpm2Token) { showStatus('cpm2-status', 'error', '⚠️ Faça login primeiro!'); return; }
+
+    const newEmail = prompt('Digite o novo email:');
+    if (!newEmail) return;
+
+    hideStatus('cpm2-status');
+    showStatus('cpm2-status', 'info', '⏳ <span class="loading"></span> Alterando email...');
+
+    try {
+        const url = `https://identitytoolkit.googleapis.com/v1/accounts:update?key=${CPM2_FB_KEY}`;
+        const resp = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idToken: cpm2Token, email: newEmail, returnSecureToken: true })
+        });
+        const data = await resp.json();
+
+        if (data.email) {
+            cpm2Email = newEmail;
+            document.getElementById('cpm2-display-email').textContent = newEmail;
+            showStatus('cpm2-status', 'success', '✅ Email alterado para: ' + newEmail);
+        } else {
+            showStatus('cpm2-status', 'error', '❌ Erro: ' + (data.error?.message || 'Falha ao alterar'));
+        }
+    } catch (e) {
+        showStatus('cpm2-status', 'error', '❌ Erro: ' + e.message);
+    }
+}
+
+async function cpm2ChangePassword() {
+    if (!cpm2Token) { showStatus('cpm2-status', 'error', '⚠️ Faça login primeiro!'); return; }
+
+    const newPass = prompt('Digite a nova senha:');
+    if (!newPass) return;
+
+    hideStatus('cpm2-status');
+    showStatus('cpm2-status', 'info', '⏳ <span class="loading"></span> Alterando senha...');
+
+    try {
+        const url = `https://identitytoolkit.googleapis.com/v1/accounts:update?key=${CPM2_FB_KEY}`;
+        const resp = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idToken: cpm2Token, password: newPass, returnSecureToken: true })
+        });
+        const data = await resp.json();
+
+        if (data.passwordHash) {
+            cpm2Pass = newPass;
+            showStatus('cpm2-status', 'success', '✅ Senha alterada com sucesso!');
+        } else {
+            showStatus('cpm2-status', 'error', '❌ Erro: ' + (data.error?.message || 'Falha ao alterar'));
+        }
+    } catch (e) {
+        showStatus('cpm2-status', 'error', '❌ Erro: ' + e.message);
+    }
+}
+
+async function cpm2DeleteAccount() {
+    if (!cpm2Token) { showStatus('cpm2-status', 'error', '⚠️ Faça login primeiro!'); return; }
+
+    if (!confirm('⚠️ Tem certeza que deseja EXCLUIR esta conta CPM2?\nEsta ação é irreversível!')) return;
+
+    hideStatus('cpm2-status');
+    showStatus('cpm2-status', 'info', '⏳ <span class="loading"></span> Excluindo conta...');
+
+    try {
+        const url = `https://identitytoolkit.googleapis.com/v1/accounts:delete?key=${CPM2_FB_KEY}`;
+        const resp = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idToken: cpm2Token })
+        });
+
+        if (resp.status === 200) {
+            showStatus('cpm2-status', 'success', '✅ Conta excluída com sucesso!');
+            setTimeout(() => cpm2Logout(), 1500);
+        } else {
+            const data = await resp.json();
+            showStatus('cpm2-status', 'error', '❌ Erro: ' + (data.error?.message || 'Falha ao excluir'));
+        }
+    } catch (e) {
+        showStatus('cpm2-status', 'error', '❌ Erro: ' + e.message);
+    }
+}
+</script>
+
+</body>
+</html>
